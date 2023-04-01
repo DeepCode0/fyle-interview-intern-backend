@@ -1,15 +1,15 @@
 from flask import jsonify
-from marshmallow.exceptions import ValidationError
+# from marshmallow.exceptions import ValidationError
 from core import app
-from core.apis.assignments import student_assignments_resources
+from core.apis.assignments import student_assignments_resources,teacher_assignments_resources
 from core.libs import helpers
-from core.libs.exceptions import FyleError
+from core.libs.exceptions import FyleError, ValidationError
 from werkzeug.exceptions import HTTPException
 
 from sqlalchemy.exc import IntegrityError
 
 app.register_blueprint(student_assignments_resources, url_prefix='/student')
-
+app.register_blueprint(teacher_assignments_resources,url_prefix='/teacher')
 
 @app.route('/')
 def ready():
@@ -29,7 +29,7 @@ def handle_error(err):
         ), err.status_code
     elif isinstance(err, ValidationError):
         return jsonify(
-            error=err.__class__.__name__, message=err.messages
+            error=err.__class__.__name__, message=err.message
         ), 400
     elif isinstance(err, IntegrityError):
         return jsonify(
